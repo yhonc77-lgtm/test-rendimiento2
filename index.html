@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimizador de Rendimiento Cognitivo</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a;
+            color: #f8fafc;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+            font-size: 15px;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        select:focus, input[type="text"]:focus {
+            border-color: #38bdf8;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #059669;
+        }
+        .result-box {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: #0f172a;
+            border-left: 4px solid #38bdf8;
+            border-radius: 4px;
+        }
+        .result-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🧠 Synapse Biohacking</h1>
+        <p>Evaluación de Desgaste Cognitivo y Enfoque Ejecutivo</p>
+    </div>
+
+    <form id="quizForm">
+        <div class="form-group">
+            <label for="nombre">Tu Nombre:</label>
+            <input type="text" id="nombre" placeholder="Ej. Carlos Mendoza" required>
+        </div>
+
+        <div class="form-group">
+            <label for="energia">1. Nivel de energía por las tardes (2 PM - 6 PM):</label>
+            <select id="energia" required>
+                <option value="Alto">Alto y constante - Sigo productivo</option>
+                <option value="Moderado">Moderado - Siento pesadez y busco café/azúcar</option>
+                <option value="Critico">Crítico - Agotamiento total, me cuesta pensar</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="enfoque">2. Capacidad de concentración en tareas complejas:</label>
+            <select id="enfoque" required>
+                <option value="Enfocado">Alta - Me enfoco rápido y sin distracciones</option>
+                <option value="Distraccion">Distracción fácil - Procrastino o abro pestañas</option>
+                <option value="Niebla">Niebla mental - Leo lo mismo varias veces sin entender</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="sueno">3. Calidad de sueño y descanso:</label>
+            <select id="sueno" required>
+                <option value="Bueno">Bueno - Duermo +7 horas y despierto con energía</option>
+                <option value="Intermitente">Intermitente - Duermo 5-6 horas o despierto cansado</option>
+                <option value="Insomnio">Deficiente - Insomnio, estrés acumulado o menos de 5 horas</option>
+            </select>
+        </div>
+
+        <button type="button" class="btn" onclick="calcularRendimiento()">Analizar Rendimiento y Ver Pack</button>
+    </form>
+
+    <div id="resultBox" class="result-box">
+        <div class="result-title" id="resultadoTitulo"></div>
+        <p id="resultadoTexto"></p>
+        <div style="background: #1e293b; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #475569;">
+            <strong style="color: #10b981;">Pack Recomendado:</strong> <span id="packRecomendado"></span><br>
+            <strong style="color: #10b981;">Inversión:</strong> <span id="precioPack"></span>
+        </div>
+        <button class="btn" style="background-color: #25d366;" onclick="enviarWhatsApp()">Pedir Pack por WhatsApp 🚀</button>
+    </div>
+</div>
+
+<script>
+    let resultadoGlobal = {};
+
+    function calcularRendimiento() {
+        const nombre = document.getElementById('nombre').value;
+        const energia = document.getElementById('energia').value;
+        const enfoque = document.getElementById('enfoque').value;
+        const sueno = document.getElementById('sueno').value;
+
+        if(!nombre) {
+            alert('Por favor, ingresa tu nombre.');
+            return;
+        }
+
+        let puntos = 0;
+        if(energia === 'Moderado') puntos += 1;
+        if(energia === 'Critico') puntos += 2;
+        if(enfoque === 'Distraccion') puntos += 1;
+        if(enfoque === 'Niebla') puntos += 2;
+        if(sueno === 'Intermitente') puntos += 1;
+        if(sueno === 'Insomnio') puntos += 2;
+
+        let diagnostico = "";
+        let pack = "";
+        let precio = "";
+
+        if(puntos <= 2) {
+            diagnostico = "Desgaste Leve. Tu mente funciona bien, pero puedes optimizar tu enfoque a niveles de ultra-productividad.";
+            pack = "Stack Inicial (Café Gourmet Orgánico + Micronutrientes de Soporte)";
+            precio = "190 Bs";
+        } else if(puntos <= 4) {
+            diagnostico = "Fatiga Cognitiva Moderada. Tu cerebro está operando con sobreesfuerzo debido al estrés y falta de oxígeno celular.";
+            pack = "Pack Enfoque Ejecutivo (Café Negro Lingzhi + Hongo Melena de León)";
+            precio = "390 Bs";
+        } else {
+            diagnostico = "Agotamiento y Niebla Mental Severa. Tu sistema nervioso está saturado de cortisol. Necesitas reseteo celular urgente.";
+            pack = "Protocolo Reset Mental (Café Premium + Melena de León + Extracto de Micelio GL)";
+            precio = "580 Bs";
+        }
+
+        resultadoGlobal = { nombre, energia, enfoque, sueno, diagnostico, pack, precio };
+
+        document.getElementById('resultadoTitulo').innerText = `Diagnóstico para ${nombre}:`;
+        document.getElementById('resultadoTexto').innerText = diagnostico;
+        document.getElementById('packRecomendado').innerText = pack;
+        document.getElementById('precioPack').innerText = precio;
+        document.getElementById('resultBox').style.display = 'block';
+    }
+
+    function enviarWhatsApp() {
+        // REPLAZA ESTE NÚMERO CON EL TUYO (Formato internacional, sin el signo +)
+        const tuTelefono = "59170000000"; 
+        
+        const msg = `*NUEVO PEDIDO - SYNAPSE BIOHACKING*\n\n` +
+                    `*Cliente:* ${resultadoGlobal.nombre}\n` +
+                    `*Energía:* ${resultadoGlobal.energia}\n` +
+                    `*Enfoque:* ${resultadoGlobal.enfoque}\n` +
+                    `*Sueño:* ${resultadoGlobal.sueno}\n\n` +
+                    `*Diagnóstico:* ${resultadoGlobal.diagnostico}\n\n` +
+                    `🛒 *Pedido:* Quiero el *${resultadoGlobal.pack}*\n` +
+                    `💰 *Inversión:* ${resultadoGlobal.precio}\n\n` +
+                    `_Por favor, coordine mi entrega y método de pago._`;
+
+        const url = `https://api.whatsapp.com/send?phone=${tuTelefono}&text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+</script>
+
+</body>
+</html>
